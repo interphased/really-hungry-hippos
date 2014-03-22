@@ -170,7 +170,7 @@ window.onload = function() {
                 ui_timer.setText(timer.toString());
             }
         }
-
+        
         function showScore() {
             ui_showscore = game.add.text(game.world.width/2, game.world.height/2 - 50, "Game Over", {
                 font: "56px slkscr",
@@ -189,8 +189,8 @@ window.onload = function() {
                 hippo.isEating = false;
                 hippo.score = 0;
             });
-            // ui_showscore.remove();
-            // button.remove();
+            ui_showscore.exists = false;
+            button.exists = false;
             create();
         }
 
