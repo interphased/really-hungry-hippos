@@ -12,13 +12,15 @@ window.onload = function() {
 
         var balls;
         var ball_count = 0;
-        var timer = 0;
-        var ui;
         var hippos;
         var hippo_pink;
         var hippo_yellow;
         var hippo_green;
         var hippo_blue;
+        var ui_pink;
+        var ui_yellow;
+        var ui_green;
+        var ui_blue;
 
         function create () {
 
@@ -33,8 +35,6 @@ window.onload = function() {
             Ball();
 
             // Set sprites
-            hippos = game.add.group();
-            
             hippo_pink = game.add.sprite(game.width/2 - 40, game.height - 188, 'hippo_pink', 0);
 
             hippo_yellow = game.add.sprite(game.width - 188, game.height/2 - 40, 'hippo_yellow', 6);
@@ -46,6 +46,7 @@ window.onload = function() {
             hippo_blue = game.add.sprite(0, game.height - 272 - 80, 'hippo_blue', 18);
             hippo_blue.angle = 90;
             
+            hippos = game.add.group();
             hippos.add(hippo_pink);
             hippos.add(hippo_yellow);
             hippos.add(hippo_green);
@@ -75,19 +76,41 @@ window.onload = function() {
             hippo_blue.body.setSize(188, 80, 272, 104);
             hippo_blue.body.immovable = true;
 
-
-
-
             // Set UI
-            ui = game.add.text(game.world.centerX + 64, game.world.height - 24, "0 Balls", {
+            ui_pink = game.add.text(game.world.length, game.world.height - 96, "0 Balls", {
                 font: "24px slkscr",
-                fill: "#ffffff",
-                align: "center"
+                fill: "#f2989b",
+                align: "right"
             });
-            ui.anchor.setTo(0, 0);
+            ui_pink.anchor.setTo(0, 0);
+            
+            ui_yellow = game.add.text(game.world.length, game.world.height - 72, "0 Balls", {
+                font: "24px slkscr",
+                fill: "#f8e792",
+                align: "right"
+            });
+            ui_yellow.anchor.setTo(0, 0);
+            
+            ui_green = game.add.text(game.world.length, game.world.height - 48, "0 Balls", {
+                font: "24px slkscr",
+                fill: "#90e192",
+                align: "right"
+            });
+            ui_green.anchor.setTo(0, 0);
+            
+            ui_blue = game.add.text(game.world.length, game.world.height - 24, "0 Balls", {
+                font: "24px slkscr",
+                fill: "#91cae7",
+                align: "right"
+            });
+            ui_blue.anchor.setTo(0, 0);
+
+            // Set timers
+            game.time.events.loop(Phaser.Timer.SECOND/2, hippoLogic, this);
         }
 
         function Ball() {
+            
             var ball = game.add.sprite((Math.random() * 100) + game.world.width/2 - 50, (Math.random() * 100) + game.world.height/2 - 50, 'ball');
             
             game.physics.enable([ball], Phaser.Physics.ARCADE);
@@ -123,7 +146,21 @@ window.onload = function() {
 
         }
 
+        function hippoLogic() {
+           
+            hippos.forEach(function(hippo) {
+                var timeToEat = Math.random() < 0.5 ? true : false;
+                if (timeToEat) {
+                    hippo.isEating = true;
+                }
+                else {
+                    hippo.isEating = false;
+                }
+            });
+        }
+
         function eatingAnimation() {
+            
             hippos.forEach(function(hippo) {
                 if (hippo.isEating) {
                     hippo.animations.play('bite', 40, true);
@@ -135,12 +172,24 @@ window.onload = function() {
         }
 
         function collisionHandler (obj1, obj2) {
-
+            
             hippos.forEach(function(hippo) {
                 if (hippo.isEating && obj1.key == hippo.key) {
                     hippo.score += 1;
-                    ui.setText(hippo.score + " Balls");
                     obj2.exists = false;
+
+                    if (hippo.key == 'hippo_pink') {
+                        ui_pink.setText(hippo.score + " Balls");
+                    }
+                    else if (hippo.key == 'hippo_yellow') {
+                        ui_yellow.setText(hippo.score + " Balls");
+                    }
+                    else if (hippo.key == 'hippo_green') {
+                        ui_green.setText(hippo.score + " Balls");
+                    }
+                    else if (hippo.key == 'hippo_blue') {
+                        ui_blue.setText(hippo.score + " Balls");
+                    }
                 }
             });
 
