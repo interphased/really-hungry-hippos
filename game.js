@@ -113,7 +113,7 @@ window.onload = function() {
             game.physics.arcade.collide(balls, hippo_green, collisionHandler, null, this);
             game.physics.arcade.collide(balls, hippo_blue, collisionHandler, null, this);
 
-            if (ball_count < 10) {
+            if (ball_count < 100) {
                 Ball();
             }
 
