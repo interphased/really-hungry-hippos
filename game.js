@@ -14,7 +14,6 @@ window.onload = function() {
         var ball_count = 0;
         var timer = 0;
         var ui;
-        var score = 0;
         var hippos;
         var hippo_pink;
         var hippo_yellow;
@@ -37,31 +36,27 @@ window.onload = function() {
             hippos = game.add.group();
             
             hippo_pink = game.add.sprite(game.width/2 - 40, game.height - 188, 'hippo_pink', 0);
-            hippo_pink.animations.add('bite');
-            hippo_pink.anchor.setTo(1, 0);
-            hippo_pink.isEating = false;
-            hippos.add(hippo_pink);
 
             hippo_yellow = game.add.sprite(game.width - 188, game.height/2 - 40, 'hippo_yellow', 6);
-            hippo_yellow.anchor.setTo(1, 0);
             hippo_yellow.angle = 270;
-            hippo_yellow.animations.add('bite');
-            hippo_yellow.isEating = false;
-            hippos.add(hippo_yellow);
 
             hippo_green = game.add.sprite(game.width/2 - 40, 0, 'hippo_green', 12);
-            hippo_green.anchor.setTo(1, 0);
             hippo_green.angle = 180;
-            hippo_green.animations.add('bite');
-            hippo_green.isEating = false;
-            hippos.add(hippo_green);
 
             hippo_blue = game.add.sprite(0, game.height - 272 - 80, 'hippo_blue', 18);
-            hippo_blue.anchor.setTo(1, 0);
             hippo_blue.angle = 90;
-            hippo_blue.animations.add('bite');
-            hippo_blue.isEating = false;
+            
+            hippos.add(hippo_pink);
+            hippos.add(hippo_yellow);
+            hippos.add(hippo_green);
             hippos.add(hippo_blue);
+
+            hippos.forEach(function(hippo) {
+                hippo.score = 0;
+                hippo.isEating = false;
+                hippo.animations.add('bite');
+                hippo.anchor.setTo(1, 0);
+            });
             
             hippos.z = 2;
             hippos.enableBody = true;
@@ -129,54 +124,25 @@ window.onload = function() {
         }
 
         function eatingAnimation() {
-            if (hippo_pink.isEating) {
-                hippo_pink.animations.play('bite', 40, true);
-            }
-            else {
-                hippo_pink.animations.stop();
-            }
-            if (hippo_yellow.isEating) {
-                hippo_yellow.animations.play('bite', 40, true);
-            }
-            else {
-                hippo_yellow.animations.stop();
-            }
-            if (hippo_green.isEating) {
-                hippo_green.animations.play('bite', 40, true);
-            }
-            else {
-                hippo_green.animations.stop();
-            }
-            if (hippo_blue.isEating) {
-                hippo_blue.animations.play('bite', 40, true);
-            }
-            else {
-                hippo_blue.animations.stop();
-            }
+            hippos.forEach(function(hippo) {
+                if (hippo.isEating) {
+                    hippo.animations.play('bite', 40, true);
+                }
+                else {
+                    hippo.animations.stop();
+                }
+            });
         }
 
         function collisionHandler (obj1, obj2) {
 
-            if (hippo_pink.isEating && obj1.key == 'hippo_pink') {
-                score += 1;
-                ui.setText(score + " Balls");
-                obj2.exists = false;
-            }
-            else if (hippo_yellow.isEating && obj1.key == 'hippo_yellow') {
-                score += 1;
-                ui.setText(score + " Balls");
-                obj2.exists = false;
-            }
-            else if (hippo_green.isEating && obj1.key == 'hippo_green') {
-                score += 1;
-                ui.setText(score + " Balls");
-                obj2.exists = false;
-            }
-            else if (hippo_blue.isEating && obj1.key == 'hippo_blue') {
-                score += 1;
-                ui.setText(score + " Balls");
-                obj2.exists = false;
-            }
+            hippos.forEach(function(hippo) {
+                if (hippo.isEating && obj1.key == hippo.key) {
+                    hippo.score += 1;
+                    ui.setText(hippo.score + " Balls");
+                    obj2.exists = false;
+                }
+            });
 
         }
 
