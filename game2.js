@@ -115,7 +115,7 @@ window.onload = function() {
                 });
                 this.ui_timer.anchor.setTo(0, 1);
 
-                this.ui_pink = this.game.add.text(this.game.world.width, this.game.world.height - 96, "0 Balls", {
+                this.ui_pink = game.add.text(this.game.world.width, this.game.world.height - 96, "0 Balls", {
                     font: "24px slkscr",
                     fill: "#f2989b",
                     align: "right"
@@ -144,8 +144,11 @@ window.onload = function() {
                 this.ui_blue.anchor.setTo(1, 0);
 
                 // Set timers
-                this.game.time.events.loop(Phaser.Timer.SECOND/2, this.hippoLogic, this);
-                this.game.time.events.loop(Phaser.Timer.SECOND, this.gameTimer, this);
+                this.hippoLogicTimer = game.time.events.loop(Phaser.Timer.SECOND/2, this.hippoLogic, this);
+                this.gameTimer = game.time.events.loop(Phaser.Timer.SECOND, this.timeLeft, this);
+                // this.gameTimer = this.game.time.create(true);
+                // this.gameTimer.add(Phaser.Timer.SECOND, this.timeLeft, this);
+                // this.gameTimer.start();
             },
 
             update: function () {
@@ -185,7 +188,7 @@ window.onload = function() {
                 this.ball_count++;
             },
 
-            gameTimer: function () {
+            timeLeft: function () {
                 if (this.timer <= 0) {
                     this.hippos.removeAll();
                     this.balls.removeAll();
@@ -198,6 +201,9 @@ window.onload = function() {
             },
             
             showScore: function () {
+                console.log(this.gameTimer);
+                // this.gameTimer.destroy();
+                // this.hippoLogicTimer.destroy();
                 game.state.start('end');
             },
 
@@ -228,27 +234,35 @@ window.onload = function() {
 
             collisionHandler: function (obj1, obj2) {
                 
+                var ui_pink = this.ui_pink;
+                var ui_yellow = this.ui_yellow;
+                var ui_green = this.ui_green;
+                var ui_blue = this.ui_blue;
+
                 this.hippos.forEach(function(hippo) {
                     if (hippo.isEating && obj1.key == hippo.key) {
                         hippo.score += 1;
                         obj2.exists = false;
 
-                        // console.log(this.ui_pink);
-
                         if (hippo.key == 'hippo_pink') {
-                            //this.ui_pink.setText(hippo.score + " Balls");
+                            ui_pink.setText(hippo.score + " Balls");
                         }
                         else if (hippo.key == 'hippo_yellow') {
-                            //this.ui_yellow.setText(hippo.score + " Balls");
+                            ui_yellow.setText(hippo.score + " Balls");
                         }
                         else if (hippo.key == 'hippo_green') {
-                            //this.ui_green.setText(hippo.score + " Balls");
+                            ui_green.setText(hippo.score + " Balls");
                         }
                         else if (hippo.key == 'hippo_blue') {
-                            //this.ui_blue.setText(hippo.score + " Balls");
+                            ui_blue.setText(hippo.score + " Balls");
                         }
                     }
                 });
+
+                this.ui_pink = ui_pink;
+                this.ui_yellow = ui_yellow;
+                this.ui_green = ui_green;
+                this.ui_blue = ui_blue;
 
             }
 
