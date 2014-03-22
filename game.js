@@ -1,6 +1,6 @@
 window.onload = function() {
 
-        var game = new Phaser.Game(640, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var game = new Phaser.Game(640, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
         function preload () {
             game.load.spritesheet('hippo_pink', 'images/hippo_pink.png', 128, 272);
@@ -35,28 +35,47 @@ window.onload = function() {
             // Set sprites
             hippos = game.add.group();
             
-            hippo_pink = game.add.sprite(game.width/2 - 64, game.height - 272, 'hippo_pink', 0);
+            hippo_pink = game.add.sprite(game.width/2 - 40, game.height - 188, 'hippo_pink', 0);
             hippo_pink.animations.add('bite');
+            hippo_pink.anchor.setTo(1, 0);
             hippos.add(hippo_pink);
 
-            hippo_yellow = game.add.sprite(game.width - 272, game.height/2 - 64, 'hippo_yellow', 6);
+            hippo_yellow = game.add.sprite(game.width - 188, game.height/2 - 40, 'hippo_yellow', 6);
             hippo_yellow.anchor.setTo(1, 0);
             hippo_yellow.angle = 270;
             hippo_yellow.animations.add('bite');
             hippos.add(hippo_yellow);
 
-            hippo_green = game.add.sprite(game.width/2 - 64, 272, 'hippo_green', 12);
+            hippo_green = game.add.sprite(game.width/2 - 40, 0, 'hippo_green', 12);
             hippo_green.anchor.setTo(1, 0);
             hippo_green.angle = 180;
             hippo_green.animations.add('bite');
             hippos.add(hippo_green);
 
-            hippo_blue = game.add.sprite(272, game.height - 272, 'hippo_blue', 18);
+            hippo_blue = game.add.sprite(0, game.height - 272 - 80, 'hippo_blue', 18);
             hippo_blue.anchor.setTo(1, 0);
             hippo_blue.angle = 90;
             hippo_blue.animations.add('bite');
             hippos.add(hippo_blue);
+            
             hippos.z = 2;
+            hippos.enableBody = true;
+            hippos.physicsBodyType = Phaser.Physics.ARCADE;
+            game.physics.enable([hippo_pink, hippo_yellow, hippo_green, hippo_blue]);
+            
+            hippo_pink.body.setSize(80, 188, 104, -84);
+            hippo_pink.body.immovable = true;
+            
+            hippo_yellow.body.setSize(188, 80, -84, -24);
+            hippo_yellow.body.immovable = true;
+
+            hippo_green.body.setSize(80, 188, -24, 272);
+            hippo_green.body.immovable = true;
+
+            hippo_blue.body.setSize(188, 80, 272, 104);
+            hippo_blue.body.immovable = true;
+
+
 
 
             // Set UI
@@ -84,6 +103,11 @@ window.onload = function() {
 
         function update () {
 
+            game.physics.arcade.collide(balls, hippo_pink, collisionHandler, null, this);
+            game.physics.arcade.collide(balls, hippo_yellow, collisionHandler, null, this);
+            game.physics.arcade.collide(balls, hippo_green, collisionHandler, null, this);
+            game.physics.arcade.collide(balls, hippo_blue, collisionHandler, null, this);
+
             if (ball_count < 100) {
                 Ball();
             }
@@ -97,5 +121,19 @@ window.onload = function() {
             }
 
         }
+
+        function collisionHandler (obj1, obj2) {
+
+            game.stage.backgroundColor = '#992d2d';
+
+        }
+
+        function render() {
+            // game.debug.body(hippo_pink);
+            // game.debug.body(hippo_yellow);
+            // game.debug.body(hippo_green);
+            // game.debug.body(hippo_blue);
+        }
+
 
     };
