@@ -1,6 +1,6 @@
 window.onload = function() {
 
-        var game = new Phaser.Game(640, 640, Phaser.AUTO, '');
+        var game = new Phaser.Game(640, 640, Phaser.AUTO, 'game');
         var game_state = {};
         var scores = {
             pink:   0,
@@ -21,7 +21,6 @@ window.onload = function() {
             },
 
             create: function () {
-                this.game.stage.backgroundColor = '#293542';
                 this.game.add.sprite(0, 0, 'menu');
                 var ui_title = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 50, "Really\n Hungry Hippos", {
                     font: "56px slkscr",

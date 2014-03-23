@@ -8,22 +8,31 @@
                 font-family: slkscr;
                 src: url('data/slkscr.ttf');
             }
-            html {
-                font-family: slkscr;
+            html { font-family: slkscr; }
+            body { margin: 0; }
+            h1, p { text-align: center; }
+            #container {
+                width: 640px;
+                margin: 0 auto;
+                margin-bottom: 40px;
             }
-            body {
-                margin: 0;
+            #game {
+                margin-bottom: 40px;
             }
         </style>
         <script src="phaser.min.js"></script>
     </head>
     <body>
-        <h1>Really Hungry Hippos</h1>
-        <ul>
-            <li>Click or tap to eat</li>
-            <li>Collect as much food as you can in the time limit to win!</li>
-        </ul>
-        
+        <div id="container">
+            <h1>Really Hungry Hippos</h1>
+            <ul>
+                <li>Click or tap to eat</li>
+                <li>Collect as much food as you can in the time limit to win!</li>
+            </ul>
+            <div id="game"></div>
+            <p><a href="https://github.com/interphased/really-hungry-hippos">View on Github</a></p>
+        </div>
+
         <script src="game.js"></script>
 
     </body>
