@@ -2,7 +2,12 @@ window.onload = function() {
 
         var game = new Phaser.Game(640, 640, Phaser.AUTO, '');
         var game_state = {};
-        var player_score = 0;
+        var scores = {
+            pink:   0,
+            yellow: 0,
+            green:  0,
+            blue:   0
+        };
 
         game_state.start = function () {};
         game_state.main = function () {};
@@ -47,7 +52,7 @@ window.onload = function() {
             create: function () {
 
                 this.ball_count = 0;
-                this.timer = 30;
+                this.timer = 15;
                 this.powerup = game.add.audio('powerup',1,false);
                 this.combo = game.add.audio('combo',1,false);
                 this.tick = game.add.audio('tick',1,false);
@@ -105,8 +110,8 @@ window.onload = function() {
                 this.hippo_blue.body.immovable = true;
 
                 // Show UI
-                this.showTimer();
-                this.showScore(this.game.world.width, this.game.world.height);
+                this.showTimer(this.game.world.width, this.game.world.height);
+                this.showScore(0, this.game.world.height);
 
                 // Set timers
                 this.gameTimer = game.time.events.repeat(Phaser.Timer.SECOND, this.timer, this.updateTimer, this);
@@ -173,12 +178,55 @@ window.onload = function() {
                 this.ball_count += 1;
             },
 
+            showScore: function (scoreX, scoreY) {
+                
+                this.ui_pink = game.add.text(scoreX, scoreY - 120, "0 Pink", {
+                    font: "32px slkscr",
+                    fill: "#f2989b",
+                    align: "left"
+                });
+                
+                
+                this.ui_yellow = this.game.add.text(scoreX, scoreY - 90, "0 Yellow", {
+                    font: "32px slkscr",
+                    fill: "#f8e792",
+                    align: "left"
+                });
+                
+                this.ui_green = this.game.add.text(scoreX, scoreY - 60, "0 Green", {
+                    font: "32px slkscr",
+                    fill: "#90e192",
+                    align: "left"
+                });
+                
+                this.ui_blue = this.game.add.text(scoreX, scoreY - 30, "0 Blue", {
+                    font: "32px slkscr",
+                    fill: "#91cae7",
+                    align: "left"
+                });
+            },
+
+            showTimer: function (timerX, timerY) {
+                this.ui_timer = this.game.add.text(timerX, timerY + 10, this.timer.toString(), {
+                    font: "96px slkscr",
+                    fill: "#ffffff",
+                    align: "right"
+                });
+                this.ui_timer.anchor.setTo(1, 1);
+            },
+
             updateTimer: function () {
 
                 if (this.timer <= 1) {
+                    
                     this.hippos.removeAll();
                     this.balls.removeAll();
-                    player_score = this.hippo_pink.score;
+                    
+                    scores.pink = this.hippo_pink.score;
+                    scores.yellow = this.hippo_yellow.score;
+                    scores.green = this.hippo_green.score;
+                    scores.blue = this.hippo_blue.score;
+
                     game.state.start('end');
                 }
                 else {
@@ -190,46 +238,6 @@ window.onload = function() {
                     }
                     this.ui_timer.setText(this.timer.toString());
                 }
-            },
-            
-            showTimer: function () {
-                this.ui_timer = this.game.add.text(0, this.game.world.height + 10, this.timer.toString(), {
-                    font: "80px slkscr",
-                    fill: "#ffffff",
-                    align: "right"
-                });
-                this.ui_timer.anchor.setTo(0, 1);
-            },
-
-            showScore: function (scoreX, scoreY) {
-                
-                this.ui_pink = game.add.text(scoreX, scoreY - 120, "0 Balls", {
-                    font: "32px slkscr",
-                    fill: "#f2989b",
-                    align: "right"
-                });
-                this.ui_pink.anchor.setTo(1, 0);
-                
-                this.ui_yellow = this.game.add.text(scoreX, scoreY - 90, "0 Balls", {
-                    font: "32px slkscr",
-                    fill: "#f8e792",
-                    align: "right"
-                });
-                this.ui_yellow.anchor.setTo(1, 0);
-                
-                this.ui_green = this.game.add.text(scoreX, scoreY - 60, "0 Balls", {
-                    font: "32px slkscr",
-                    fill: "#90e192",
-                    align: "right"
-                });
-                this.ui_green.anchor.setTo(1, 0);
-                
-                this.ui_blue = this.game.add.text(scoreX, scoreY - 30, "0 Balls", {
-                    font: "32px slkscr",
-                    fill: "#91cae7",
-                    align: "right"
-                });
-                this.ui_blue.anchor.setTo(1, 0);
             },
 
             hippoLogic: function () {
@@ -284,17 +292,17 @@ window.onload = function() {
                         powerup.play();
 
                         if (hippo.key == 'hippo_pink') {
-                            ui_pink.setText(hippo.score + " Balls");
+                            ui_pink.setText(hippo.score + " Pink");
                             // comboEffects;
                         }
                         else if (hippo.key == 'hippo_yellow') {
-                            ui_yellow.setText(hippo.score + " Balls");
+                            ui_yellow.setText(hippo.score + " Yellow");
                         }
                         else if (hippo.key == 'hippo_green') {
-                            ui_green.setText(hippo.score + " Balls");
+                            ui_green.setText(hippo.score + " Green");
                         }
                         else if (hippo.key == 'hippo_blue') {
-                            ui_blue.setText(hippo.score + " Balls");
+                            ui_blue.setText(hippo.score + " Blue");
                         }
                     }
                 });
@@ -329,25 +337,43 @@ window.onload = function() {
                 this.game.stage.backgroundColor = '#293542';
                 this.game.add.sprite(0, 0, 'menu');
 
-                var ui_gameover = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 60, "Game Over", {
-                    font: "56px slkscr",
+                var ui_gameover = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 130, "Game Over", {
+                    font: "72px slkscr",
                     fill: "#ffffff",
                     align: "center"
                 });
                 ui_gameover.anchor.setTo(0.5, 0.5);
 
-                var ui_score = this.game.add.text(this.game.world.width/2, this.game.world.height/2, "You ate " + player_score + " balls", {
-                    font: "20px slkscr",
-                    fill: "#ffffff",
-                    align: "center"
+                this.game.add.text(this.game.world.width/2 - 96, this.game.world.height - 380, scores.pink + " Pink", {
+                    font: "32px slkscr",
+                    fill: "#f2989b",
+                    align: "left"
                 });
-                ui_score.anchor.setTo(0.5, 0.5);
+                
+                this.game.add.text(this.game.world.width/2 - 96, this.game.world.height - 350, scores.yellow + " Yellow", {
+                    font: "32px slkscr",
+                    fill: "#f8e792",
+                    align: "left"
+                });
+                
+                this.game.add.text(this.game.world.width/2 - 96, this.game.world.height - 320, scores.green + " Green", {
+                    font: "32px slkscr",
+                    fill: "#90e192",
+                    align: "left"
+                });
+                
+                this.game.add.text(this.game.world.width/2 - 96, this.game.world.height - 290, scores.blue + " Blue", {
+                    font: "32px slkscr",
+                    fill: "#91cae7",
+                    align: "left"
+                });
 
-                this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 50, 'button', this.buttonPlay, this, 2, 2, 0);
+                this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 100, 'button', this.buttonPlay, this, 2, 2, 0);
             },
+
             buttonPlay: function () {
                 game.state.start('main');
-            }
+            },
         }
 
         game.state.add('start', game_state.start);
