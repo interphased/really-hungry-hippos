@@ -118,7 +118,7 @@ window.onload = function() {
                 this.game.physics.arcade.collide(this.balls, this.hippo_green, this.collisionHandler, null, this);
                 this.game.physics.arcade.collide(this.balls, this.hippo_blue, this.collisionHandler, null, this);
 
-                if (this.ball_count < 100) {
+                if (this.ball_count < 50) {
                     this.Ball();
                 }
 
@@ -135,11 +135,41 @@ window.onload = function() {
 
             Ball: function () {
                 
-                var ball = this.game.add.sprite((Math.random() * 100) + this.game.world.width/2 - 50, (Math.random() * 100) + this.game.world.height/2 - 50, 'ball');
-                
-                this.game.physics.enable([ball], Phaser.Physics.ARCADE);
+                var location = Math.floor(Math.random() * 4);
 
-                ball.body.velocity.setTo((Math.random() - 0.5) * 600, (Math.random() - 0.5) * 600);
+                // top left
+                if (location == 0) {
+                    var ball = this.game.add.sprite(0, 0, 'ball');
+                    this.game.physics.enable([ball], Phaser.Physics.ARCADE);
+                    ball.body.velocity.setTo((Math.random()) * 500 + 50, (Math.random() * -1) * 500 - 50);
+                }
+
+                // top right
+                else if (location == 1) {
+                    var ball = this.game.add.sprite(this.game.world.width, 0, 'ball');
+                    this.game.physics.enable([ball], Phaser.Physics.ARCADE);
+                    ball.body.velocity.setTo((Math.random() * -1) * 500 - 50, (Math.random() * -1) * 500 - 50);
+                }
+
+                // bottom right
+                else if (location == 2) {
+                    var ball = this.game.add.sprite(this.game.world.width, this.game.world.height, 'ball');
+                    this.game.physics.enable([ball], Phaser.Physics.ARCADE);
+                    ball.body.velocity.setTo((Math.random() * -1) * 500 - 50, (Math.random()) * 500 + 50);
+                }
+
+                // bottom left
+                else if (location == 3) {
+                    var ball = this.game.add.sprite(0, this.game.world.height, 'ball');
+                    this.game.physics.enable([ball], Phaser.Physics.ARCADE);
+                    ball.body.velocity.setTo((Math.random()) * 500 + 50, (Math.random()) * 500 + 50);
+                }
+
+                // var ball = this.game.add.sprite((Math.random() * 100) + this.game.world.width/2 - 50, (Math.random() * 100) + this.game.world.height/2 - 50, 'ball');
+                
+                // this.game.physics.enable([ball], Phaser.Physics.ARCADE);
+
+                // ball.body.velocity.setTo((Math.random() - 0.5) * 600, (Math.random() - 0.5) * 600);
                 ball.body.collideWorldBounds = true;
                 ball.body.bounce.setTo(1, 1);
 
@@ -153,8 +183,6 @@ window.onload = function() {
                 if (this.timer <= 0) {
                     this.hippos.removeAll();
                     this.balls.removeAll();
-                    // this.gameTimer.timer.stop();
-                    // this.hippoLogicTimer.timer.stop();
                     game.state.start('end');
                 }
                 else {
@@ -254,9 +282,7 @@ window.onload = function() {
                 this.ui_green = ui_green;
                 this.ui_blue = ui_blue;
                 this.ball_count = ball_count;
-
             }
-
         }
 
         game_state.end.prototype = {
@@ -285,7 +311,5 @@ window.onload = function() {
         game.state.add('main', game_state.main);
         game.state.add('end', game_state.end);
         game.state.start('start');
-        
-
 
     };
