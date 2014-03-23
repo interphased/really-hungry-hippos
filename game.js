@@ -47,7 +47,7 @@ window.onload = function() {
             create: function () {
 
                 this.ball_count = 0;
-                this.timer = 10;
+                this.timer = 30;
                 this.powerup = game.add.audio('powerup',1,false);
                 this.combo = game.add.audio('combo',1,false);
                 this.tick = game.add.audio('tick',1,false);
@@ -328,18 +328,21 @@ window.onload = function() {
 
                 this.game.stage.backgroundColor = '#293542';
                 this.game.add.sprite(0, 0, 'menu');
+
                 var ui_gameover = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 60, "Game Over", {
                     font: "56px slkscr",
                     fill: "#ffffff",
                     align: "center"
                 });
                 ui_gameover.anchor.setTo(0.5, 0.5);
+
                 var ui_score = this.game.add.text(this.game.world.width/2, this.game.world.height/2, "You ate " + player_score + " balls", {
                     font: "20px slkscr",
                     fill: "#ffffff",
                     align: "center"
                 });
                 ui_score.anchor.setTo(0.5, 0.5);
+
                 this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 50, 'button', this.buttonPlay, this, 2, 2, 0);
             },
             buttonPlay: function () {
