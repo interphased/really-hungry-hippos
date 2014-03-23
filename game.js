@@ -2,6 +2,7 @@ window.onload = function() {
 
         var game = new Phaser.Game(640, 640, Phaser.AUTO, '');
         var game_state = {};
+        var player_score = 0;
 
         game_state.start = function () {};
         game_state.main = function () {};
@@ -38,7 +39,7 @@ window.onload = function() {
                 this.game.load.spritesheet('hippo_green', 'images/hippo_green.png', 128, 272);
                 this.game.load.spritesheet('hippo_blue', 'images/hippo_blue.png', 128, 272);
                 this.game.load.image('ball', 'images/ball.png');
-                this.game.load.audio('powerup', 'data/powerup_2.wav');
+                this.game.load.audio('powerup', 'data/powerup.wav');
                 this.game.load.audio('combo', 'data/combo.wav');
                 this.game.load.audio('tick', 'data/tick.wav');
             },
@@ -70,7 +71,7 @@ window.onload = function() {
                 this.hippo_green = this.game.add.sprite(this.game.width/2 - 40, 20, 'hippo_green', 12);
                 this.hippo_green.angle = 180;
 
-                this.hippo_blue = this.game.add.sprite(20, this.game.height - 272 - 80, 'hippo_blue', 18);
+                this.hippo_blue = this.game.add.sprite(20, this.game.height - 280 - 80, 'hippo_blue', 18);
                 this.hippo_blue.angle = 90;
                 
                 this.hippos = game.add.group();
@@ -104,12 +105,7 @@ window.onload = function() {
                 this.hippo_blue.body.immovable = true;
 
                 // Show UI
-                this.ui_timer = this.game.add.text(0, this.game.world.height, this.timer.toString(), {
-                    font: "72px slkscr",
-                    fill: "#ffffff",
-                    align: "right"
-                });
-                this.ui_timer.anchor.setTo(0, 1);
+                this.showTimer();
                 this.showScore(this.game.world.width, this.game.world.height);
 
                 // Set timers
@@ -182,6 +178,7 @@ window.onload = function() {
                 if (this.timer <= 1) {
                     this.hippos.removeAll();
                     this.balls.removeAll();
+                    player_score = this.hippo_pink.score;
                     game.state.start('end');
                 }
                 else {
@@ -195,31 +192,40 @@ window.onload = function() {
                 }
             },
             
+            showTimer: function () {
+                this.ui_timer = this.game.add.text(0, this.game.world.height + 10, this.timer.toString(), {
+                    font: "80px slkscr",
+                    fill: "#ffffff",
+                    align: "right"
+                });
+                this.ui_timer.anchor.setTo(0, 1);
+            },
+
             showScore: function (scoreX, scoreY) {
                 
-                this.ui_pink = game.add.text(scoreX, scoreY - 96, "0 Balls", {
-                    font: "24px slkscr",
+                this.ui_pink = game.add.text(scoreX, scoreY - 120, "0 Balls", {
+                    font: "32px slkscr",
                     fill: "#f2989b",
                     align: "right"
                 });
                 this.ui_pink.anchor.setTo(1, 0);
                 
-                this.ui_yellow = this.game.add.text(scoreX, scoreY - 72, "0 Balls", {
-                    font: "24px slkscr",
+                this.ui_yellow = this.game.add.text(scoreX, scoreY - 90, "0 Balls", {
+                    font: "32px slkscr",
                     fill: "#f8e792",
                     align: "right"
                 });
                 this.ui_yellow.anchor.setTo(1, 0);
                 
-                this.ui_green = this.game.add.text(scoreX, scoreY - 48, "0 Balls", {
-                    font: "24px slkscr",
+                this.ui_green = this.game.add.text(scoreX, scoreY - 60, "0 Balls", {
+                    font: "32px slkscr",
                     fill: "#90e192",
                     align: "right"
                 });
                 this.ui_green.anchor.setTo(1, 0);
                 
-                this.ui_blue = this.game.add.text(scoreX, scoreY - 24, "0 Balls", {
-                    font: "24px slkscr",
+                this.ui_blue = this.game.add.text(scoreX, scoreY - 30, "0 Balls", {
+                    font: "32px slkscr",
                     fill: "#91cae7",
                     align: "right"
                 });
@@ -257,7 +263,6 @@ window.onload = function() {
             comboEffects: function() {
                 if (this.hippo_pink.score != 0 && this.hippo_pink.score % 10 == 0) {
                     this.combo.play();
-                    console.log('hit');
                 }
             },
 
@@ -281,7 +286,6 @@ window.onload = function() {
                         if (hippo.key == 'hippo_pink') {
                             ui_pink.setText(hippo.score + " Balls");
                             // comboEffects;
-                            console.log('pink');
                         }
                         else if (hippo.key == 'hippo_yellow') {
                             ui_yellow.setText(hippo.score + " Balls");
@@ -324,12 +328,18 @@ window.onload = function() {
 
                 this.game.stage.backgroundColor = '#293542';
                 this.game.add.sprite(0, 0, 'menu');
-                var ui_gameover = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 50, "Game Over", {
+                var ui_gameover = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 60, "Game Over", {
                     font: "56px slkscr",
                     fill: "#ffffff",
                     align: "center"
                 });
                 ui_gameover.anchor.setTo(0.5, 0.5);
+                var ui_score = this.game.add.text(this.game.world.width/2, this.game.world.height/2, "You ate " + player_score + " balls", {
+                    font: "20px slkscr",
+                    fill: "#ffffff",
+                    align: "center"
+                });
+                ui_score.anchor.setTo(0.5, 0.5);
                 this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 50, 'button', this.buttonPlay, this, 2, 2, 0);
             },
             buttonPlay: function () {
