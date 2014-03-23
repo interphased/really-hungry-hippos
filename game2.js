@@ -35,13 +35,16 @@ window.onload = function() {
                 this.game.load.spritesheet('hippo_blue', 'images/hippo_blue.png', 128, 272);
                 this.game.load.image('ball', 'images/ball.png');
                 this.game.load.spritesheet('button', 'images/button.png', 200, 70);
+                this.game.load.audio('powerup', 'data/powerup.wav');
             },
 
             create: function () {
 
                 // var balls;
                 this.ball_count = 0;
-                this.timer = 4;
+                this.timer = 5;
+                this.powerup = game.add.audio('powerup',1,false);
+
                 // var hippos;
                 // var hippo_pink;
                 // var hippo_yellow;
@@ -144,11 +147,13 @@ window.onload = function() {
                 this.ui_blue.anchor.setTo(1, 0);
 
                 // Set timers
-                this.hippoLogicTimer = game.time.events.loop(Phaser.Timer.SECOND/2, this.hippoLogic, this);
-                this.gameTimer = game.time.events.loop(Phaser.Timer.SECOND, this.timeLeft, this);
-                // this.gameTimer = this.game.time.create(true);
-                // this.gameTimer.add(Phaser.Timer.SECOND, this.timeLeft, this);
-                // this.gameTimer.start();
+                // this.hippoLogicTimer = game.time.events.loop(Phaser.Timer.SECOND/2, this.hippoLogic, this);
+                // this.gameTimer = game.time.events.loop(Phaser.Timer.SECOND, this.timeLeft, this);
+
+                this.gameTimer = game.time.events.repeat(Phaser.Timer.SECOND, this.timer + 1, this.updateTimer, this);
+                this.hippoLogicTimer = game.time.events.repeat(Phaser.Timer.SECOND / 2, this.timer + 1, this.hippoLogic, this);
+
+                // this.gameTimer.timer.repeatCount = 5;
             },
 
             update: function () {
@@ -188,10 +193,13 @@ window.onload = function() {
                 this.ball_count++;
             },
 
-            timeLeft: function () {
+            updateTimer: function () {
+
                 if (this.timer <= 0) {
                     this.hippos.removeAll();
                     this.balls.removeAll();
+                    // this.gameTimer.timer.stop();
+                    // this.hippoLogicTimer.timer.stop();
                     this.showScore();
                 }
                 else {
@@ -201,9 +209,6 @@ window.onload = function() {
             },
             
             showScore: function () {
-                console.log(this.gameTimer);
-                // this.gameTimer.destroy();
-                // this.hippoLogicTimer.destroy();
                 game.state.start('end');
             },
 
@@ -238,11 +243,13 @@ window.onload = function() {
                 var ui_yellow = this.ui_yellow;
                 var ui_green = this.ui_green;
                 var ui_blue = this.ui_blue;
+                var powerup = this.powerup;
 
                 this.hippos.forEach(function(hippo) {
                     if (hippo.isEating && obj1.key == hippo.key) {
                         hippo.score += 1;
                         obj2.exists = false;
+                        powerup.play();
 
                         if (hippo.key == 'hippo_pink') {
                             ui_pink.setText(hippo.score + " Balls");
