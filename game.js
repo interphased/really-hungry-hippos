@@ -16,8 +16,20 @@ window.onload = function() {
         game_state.start.prototype = {
             
             preload: function () {
+                this.game.load.spritesheet('hippo_pink', 'images/hippo_pink.png', 128, 272);
+                this.game.load.spritesheet('hippo_yellow', 'images/hippo_yellow.png', 128, 272);
+                this.game.load.spritesheet('hippo_green', 'images/hippo_green.png', 128, 272);
+                this.game.load.spritesheet('hippo_blue', 'images/hippo_blue.png', 128, 272);
+                this.game.load.image('ball', 'images/ball.png');
+                
                 this.game.load.spritesheet('button', 'images/button-play.png', 200, 70);
+                this.game.load.spritesheet('button_again', 'images/button-again.png', 200, 70);
                 this.game.load.image('menu', 'images/menu.png');
+
+                this.game.load.audio('powerup', 'data/powerup.wav');
+                this.game.load.audio('combo', 'data/combo.wav');
+                this.game.load.audio('tick', 'data/tick.wav');
+                this.game.load.audio('gameover', 'data/gameover.wav');
             },
 
             create: function () {
@@ -36,17 +48,6 @@ window.onload = function() {
         }
 
         game_state.main.prototype = {
-
-            preload: function () {
-                this.game.load.spritesheet('hippo_pink', 'images/hippo_pink.png', 128, 272);
-                this.game.load.spritesheet('hippo_yellow', 'images/hippo_yellow.png', 128, 272);
-                this.game.load.spritesheet('hippo_green', 'images/hippo_green.png', 128, 272);
-                this.game.load.spritesheet('hippo_blue', 'images/hippo_blue.png', 128, 272);
-                this.game.load.image('ball', 'images/ball.png');
-                this.game.load.audio('powerup', 'data/powerup.wav');
-                this.game.load.audio('combo', 'data/combo.wav');
-                this.game.load.audio('tick', 'data/tick.wav');
-            },
 
             create: function () {
 
@@ -311,23 +312,10 @@ window.onload = function() {
                 this.ui_green = ui_green;
                 this.ui_blue = ui_blue;
                 this.ball_count = ball_count;
-            },
-            render: function() {
-
-                // game.debug.body(this.hippo_pink);
-                // game.debug.body(this.hippo_yellow);
-                // game.debug.body(this.hippo_green);
-                // game.debug.body(this.hippo_blue);
             }
         }
 
         game_state.end.prototype = {
-            
-            preload: function () {
-                this.game.load.spritesheet('button', 'images/button-again.png', 200, 70);
-                this.game.load.image('menu', 'images/menu.png');
-                this.game.load.audio('gameover', 'data/gameover.wav');
-            },
 
             create: function () {
                 this.gameover = game.add.audio('gameover',1,false);
@@ -367,7 +355,7 @@ window.onload = function() {
                     align: "left"
                 });
 
-                this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 100, 'button', this.buttonPlay, this, 2, 2, 0);
+                this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 100, 'button_again', this.buttonPlay, this, 2, 2, 0);
             },
 
             buttonPlay: function () {
