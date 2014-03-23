@@ -124,7 +124,7 @@ window.onload = function() {
                     this.Ball();
                 }
 
-                if (this.game.input.mousePointer.isDown) {
+                if (this.game.input.mousePointer.isDown || game.input.pointer1.isDown) {
                     this.hippo_pink.isEating = true;   
                 }
                 else {
