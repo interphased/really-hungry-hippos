@@ -5,6 +5,10 @@
 #### Description
 Four really hungry hippos find themselves in an eating contest to determine which one can eat the most. Devour more food than your opponents to win!
 
+#### How to Play
+* Click or tap anywhere to eat
+* Eat more food than your opponents to win!
+
 #### Technology Used
 * [Phaser.js](http://phaser.io/)
 
