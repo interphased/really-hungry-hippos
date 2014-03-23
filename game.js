@@ -11,10 +11,12 @@ window.onload = function() {
             
             preload: function () {
                 this.game.load.spritesheet('button', 'images/button-play.png', 200, 70);
+                this.game.load.image('menu', 'images/menu.png');
             },
 
             create: function () {
                 this.game.stage.backgroundColor = '#293542';
+                this.game.add.sprite(0, 0, 'menu');
                 var ui_title = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 50, "Really\n Hungry Hippos", {
                     font: "56px slkscr",
                     fill: "#ffffff",
@@ -36,7 +38,9 @@ window.onload = function() {
                 this.game.load.spritesheet('hippo_green', 'images/hippo_green.png', 128, 272);
                 this.game.load.spritesheet('hippo_blue', 'images/hippo_blue.png', 128, 272);
                 this.game.load.image('ball', 'images/ball.png');
-                this.game.load.audio('powerup', 'data/powerup.wav');
+                this.game.load.audio('powerup', 'data/powerup_2.wav');
+                this.game.load.audio('combo', 'data/combo.wav');
+                this.game.load.audio('tick', 'data/tick.wav');
             },
 
             create: function () {
@@ -44,6 +48,8 @@ window.onload = function() {
                 this.ball_count = 0;
                 this.timer = 10;
                 this.powerup = game.add.audio('powerup',1,false);
+                this.combo = game.add.audio('combo',1,false);
+                this.tick = game.add.audio('tick',1,false);
 
                 this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -56,15 +62,15 @@ window.onload = function() {
                 this.Ball();
 
                 // Set sprites
-                this.hippo_pink = this.game.add.sprite(this.game.width/2 - 40, this.game.height - 188, 'hippo_pink', 0);
+                this.hippo_pink = this.game.add.sprite(this.game.width/2 - 40, this.game.height - 208, 'hippo_pink', 0);
 
-                this.hippo_yellow = this.game.add.sprite(this.game.width - 188, this.game.height/2 - 40, 'hippo_yellow', 6);
+                this.hippo_yellow = this.game.add.sprite(this.game.width - 208, this.game.height/2 - 40, 'hippo_yellow', 6);
                 this.hippo_yellow.angle = 270;
 
-                this.hippo_green = this.game.add.sprite(this.game.width/2 - 40, 0, 'hippo_green', 12);
+                this.hippo_green = this.game.add.sprite(this.game.width/2 - 40, 20, 'hippo_green', 12);
                 this.hippo_green.angle = 180;
 
-                this.hippo_blue = this.game.add.sprite(0, this.game.height - 272 - 80, 'hippo_blue', 18);
+                this.hippo_blue = this.game.add.sprite(20, this.game.height - 272 - 80, 'hippo_blue', 18);
                 this.hippo_blue.angle = 90;
                 
                 this.hippos = game.add.group();
@@ -85,16 +91,16 @@ window.onload = function() {
                 this.hippos.physicsBodyType = Phaser.Physics.ARCADE;
                 this.game.physics.enable([this.hippo_pink, this.hippo_yellow, this.hippo_green, this.hippo_blue]);
                 
-                this.hippo_pink.body.setSize(80, 188, 104, -84);
+                this.hippo_pink.body.setSize(80, 188, 104, -64);
                 this.hippo_pink.body.immovable = true;
                 
-                this.hippo_yellow.body.setSize(188, 80, -84, -24);
+                this.hippo_yellow.body.setSize(188, 80, -64, -24);
                 this.hippo_yellow.body.immovable = true;
 
-                this.hippo_green.body.setSize(80, 188, -24, 272);
+                this.hippo_green.body.setSize(80, 188, -24, 252);
                 this.hippo_green.body.immovable = true;
 
-                this.hippo_blue.body.setSize(188, 80, 272, 104);
+                this.hippo_blue.body.setSize(188, 80, 252, 104);
                 this.hippo_blue.body.immovable = true;
 
                 // Show UI
@@ -107,18 +113,13 @@ window.onload = function() {
                 this.showScore(this.game.world.width, this.game.world.height);
 
                 // Set timers
-                this.gameTimer = game.time.events.repeat(Phaser.Timer.SECOND, this.timer + 1, this.updateTimer, this);
-                this.hippoLogicTimer = game.time.events.repeat(Phaser.Timer.SECOND / 4, this.timer * 4 + 1, this.hippoLogic, this);
+                this.gameTimer = game.time.events.repeat(Phaser.Timer.SECOND, this.timer, this.updateTimer, this);
+                this.hippoLogicTimer = game.time.events.repeat(Phaser.Timer.SECOND / 4, this.timer * 4, this.hippoLogic, this);
             },
 
             update: function () {
 
-                this.game.physics.arcade.collide(this.balls, this.hippo_pink, this.collisionHandler, null, this);
-                this.game.physics.arcade.collide(this.balls, this.hippo_yellow, this.collisionHandler, null, this);
-                this.game.physics.arcade.collide(this.balls, this.hippo_green, this.collisionHandler, null, this);
-                this.game.physics.arcade.collide(this.balls, this.hippo_blue, this.collisionHandler, null, this);
-
-                if (this.ball_count < 50) {
+                if (this.ball_count < 15) {
                     this.Ball();
                 }
 
@@ -130,6 +131,11 @@ window.onload = function() {
                 }
                 
                 this.eatingAnimation();
+
+                this.game.physics.arcade.collide(this.balls, this.hippo_pink, this.collisionHandler, null, this);
+                this.game.physics.arcade.collide(this.balls, this.hippo_yellow, this.collisionHandler, null, this);
+                this.game.physics.arcade.collide(this.balls, this.hippo_green, this.collisionHandler, null, this);
+                this.game.physics.arcade.collide(this.balls, this.hippo_blue, this.collisionHandler, null, this);
 
             },
 
@@ -165,33 +171,32 @@ window.onload = function() {
                     ball.body.velocity.setTo((Math.random()) * 500 + 50, (Math.random()) * 500 + 50);
                 }
 
-                // var ball = this.game.add.sprite((Math.random() * 100) + this.game.world.width/2 - 50, (Math.random() * 100) + this.game.world.height/2 - 50, 'ball');
-                
-                // this.game.physics.enable([ball], Phaser.Physics.ARCADE);
-
-                // ball.body.velocity.setTo((Math.random() - 0.5) * 600, (Math.random() - 0.5) * 600);
                 ball.body.collideWorldBounds = true;
                 ball.body.bounce.setTo(1, 1);
-
                 this.balls.add(ball);
-
                 this.ball_count += 1;
             },
 
             updateTimer: function () {
 
-                if (this.timer <= 0) {
+                if (this.timer <= 1) {
                     this.hippos.removeAll();
                     this.balls.removeAll();
                     game.state.start('end');
                 }
                 else {
                     this.timer -= 1;
+                    if (this.timer <= 5) {
+                        this.combo.play();
+                    } else {
+                        this.tick.play();
+                    }
                     this.ui_timer.setText(this.timer.toString());
                 }
             },
             
             showScore: function (scoreX, scoreY) {
+                
                 this.ui_pink = game.add.text(scoreX, scoreY - 96, "0 Balls", {
                     font: "24px slkscr",
                     fill: "#f2989b",
@@ -224,12 +229,15 @@ window.onload = function() {
             hippoLogic: function () {
                
                 this.hippos.forEach(function(hippo) {
-                    var timeToEat = Math.random() < 0.7 ? true : false;
-                    if (timeToEat) {
-                        hippo.isEating = true;
-                    }
-                    else {
-                        hippo.isEating = false;
+                    
+                    if (hippo.key != 'hippo_pink') {
+                        var timeToEat = Math.random() < 0.7 ? true : false;
+                        if (timeToEat) {
+                            hippo.isEating = true;
+                        }
+                        else {
+                            hippo.isEating = false;
+                        }    
                     }
                 });
             },
@@ -246,6 +254,13 @@ window.onload = function() {
                 });
             },
 
+            comboEffects: function() {
+                if (this.hippo_pink.score != 0 && this.hippo_pink.score % 10 == 0) {
+                    this.combo.play();
+                    console.log('hit');
+                }
+            },
+
             collisionHandler: function (obj1, obj2) {
                 
                 var ui_pink = this.ui_pink;
@@ -254,6 +269,7 @@ window.onload = function() {
                 var ui_blue = this.ui_blue;
                 var powerup = this.powerup;
                 var ball_count = this.ball_count;
+                // var comboEffects = this.comboEffects();
 
                 this.hippos.forEach(function(hippo) {
                     if (hippo.isEating && obj1.key == hippo.key) {
@@ -264,6 +280,8 @@ window.onload = function() {
 
                         if (hippo.key == 'hippo_pink') {
                             ui_pink.setText(hippo.score + " Balls");
+                            // comboEffects;
+                            console.log('pink');
                         }
                         else if (hippo.key == 'hippo_yellow') {
                             ui_yellow.setText(hippo.score + " Balls");
@@ -282,6 +300,13 @@ window.onload = function() {
                 this.ui_green = ui_green;
                 this.ui_blue = ui_blue;
                 this.ball_count = ball_count;
+            },
+            render: function() {
+
+                // game.debug.body(this.hippo_pink);
+                // game.debug.body(this.hippo_yellow);
+                // game.debug.body(this.hippo_green);
+                // game.debug.body(this.hippo_blue);
             }
         }
 
@@ -289,17 +314,22 @@ window.onload = function() {
             
             preload: function () {
                 this.game.load.spritesheet('button', 'images/button-again.png', 200, 70);
+                this.game.load.image('menu', 'images/menu.png');
+                this.game.load.audio('gameover', 'data/gameover.wav');
             },
 
             create: function () {
+                this.gameover = game.add.audio('gameover',1,false);
+                this.gameover.play();
+
                 this.game.stage.backgroundColor = '#293542';
+                this.game.add.sprite(0, 0, 'menu');
                 var ui_gameover = this.game.add.text(this.game.world.width/2, this.game.world.height/2 - 50, "Game Over", {
                     font: "56px slkscr",
                     fill: "#ffffff",
                     align: "center"
                 });
                 ui_gameover.anchor.setTo(0.5, 0.5);
-
                 this.game.add.button(this.game.world.width/2 - 100, this.game.world.height/2 + 50, 'button', this.buttonPlay, this, 2, 2, 0);
             },
             buttonPlay: function () {
